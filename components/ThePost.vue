@@ -56,7 +56,7 @@ const isDeleting = ref(false)
             <button
               class="flex items-center rounded gap-2 text-red-500 justify-between bg-black w-full pl-4 pr-3 py-1 hover:bg-gray-900"
             >
-              <div>Delete</div>
+              <div>Удалить</div>
               <Icon name="solar:trash-bin-trash-broken" size="20" />
             </button>
           </div>
@@ -86,7 +86,7 @@ const isDeleting = ref(false)
             <div class="relative text-sm text-gray-500">
               <div>
                 <span>4</span>
-                likes
+                нравится
               </div>
             </div>
           </div>

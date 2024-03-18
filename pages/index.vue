@@ -15,9 +15,9 @@ onBeforeMount(() => {
   posts.value = [
     {
       id: 123,
-      name: 'Degibons Dev',
+      name: 'Degibons',
       image: 'https://placehold.co/100',
-      text: 'This is the title',
+      text: 'Заголовок поста',
       picture: 'https://placehold.co/500'
     }
   ]
@@ -33,8 +33,6 @@ onBeforeMount(() => {
           class="px-4 mx-auto overflow-y-scroll w-full h-full box-content"
         >
           <div v-if="isPost" v-for="post in posts" :key="post.id">
-            <ThePost :post="post" @isDeleted="posts = []" />
-            <ThePost :post="post" @isDeleted="posts = []" />
             <ThePost :post="post" @isDeleted="posts = []" />
           </div>
         </div>
