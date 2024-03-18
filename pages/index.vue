@@ -5,7 +5,7 @@ import { useUserStore } from '~/stores/user'
 import type { Post } from '~/types'
 
 const userStore = useUserStore()
-// const user = useSupabaseUser()
+const user = useSupabaseUser()
 
 const posts = ref<Post[]>([])
 const isPost = ref(true)
