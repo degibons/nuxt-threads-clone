@@ -5,8 +5,8 @@ import type { Post } from '~/types'
 
 const userStore = useUserStore()
 
-// const client = useSupabaseClient()
-// const user = useSupabaseUser()
+const client = useSupabaseClient()
+const user = useSupabaseUser()
 
 const text = ref(null)
 const isLoading = ref(false)
@@ -37,6 +37,55 @@ const restore = () => {
   userStore.isMenuOverlay = false
   clearData()
 }
+
+const createPost = async () => {
+  let dataOut = null
+  let errorOut = null
+
+  isLoading.value = true
+
+  if (fileData.value) {
+    const { data, error } = await client.storage
+      .from('threads-clone-files')
+      .upload(`${uuidv4()}.jpg`, fileData.value)
+
+    dataOut = data
+    errorOut = error
+  }
+
+  if (errorOut) {
+    console.log(errorOut)
+    return errorOut
+  }
+
+  let pic = ''
+  if (dataOut) {
+    pic = dataOut.path || ''
+  }
+
+  try {
+    await useFetch('/api/create-post', {
+      method: 'POST',
+      body: {
+        userId: user.value?.identities![0].user_id,
+        name: user.value?.identities![0].identity_data!.preferred_username,
+        image: user.value?.identities![0].identity_data!.avatar_url,
+        text: text.value,
+        picture: pic
+      }
+    })
+
+    // TODO: get new post by id (state action) and push to posts instead getAllPosts
+    await userStore.getAllPosts()
+    userStore.isMenuOverlay = false
+
+    clearData()
+    isLoading.value = false
+  } catch (error) {
+    console.log(error)
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -56,13 +105,15 @@ const restore = () => {
       >
         <div class="py-2 w-full">
           <div class="flex items-center">
-            <div class="flex items-center text-white">
+            <div v-if="user" class="flex items-center text-white">
               <img
                 class="rounded-full size-8"
-                src="https://source.unsplash.com/random"
+                :src="user.identities![0].identity_data!.avatar_url"
                 alt=""
               />
-              <div class="ml-2 font-semibold text-[18px]">Degibons</div>
+              <div class="ml-2 font-semibold text-[18px]">
+                {{ user.identities![0].identity_data!.preferred_username }}
+              </div>
             </div>
           </div>
 
@@ -116,6 +167,7 @@ const restore = () => {
       <button
         v-if="text"
         :disabled="isLoading"
+        @click="createPost()"
         class="fixed bottom-0 font-bold text-lg w-full bg-black inline-block float-right p-4 border-t border-t-gray-700"
         :class="isLoading ? 'text-gray-600' : 'text-blue-600'"
       >
